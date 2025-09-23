@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <a href="/" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Back to Log List
+                </a>
+                <h1><i class="fas fa-file-code"></i> <%= filename || 'Log Viewer' %></h1>
+            </div>
+        </header>
+
+        <nav class="log-navigation">
+            <div class="nav-left">
+                <h3>Available Logs:</h3>
+                <div class="log-tabs">
+                    <% if (allFiles && allFiles.length > 0) { %>
+                        <% allFiles.forEach(function(file) { %>
+                            <a href="/logs/<%= file.name %>" 
+                               class="log-tab <%= filename === file.name ? 'active' : '' %>">
+                                <i class="fas fa-file"></i> <%= file.name %>
+                            </a>
+                        <% }); %>
+                    <% } %>
+                </div>
+            </div>
+            <div class="nav-right">
+                <button id="searchBtn" class="btn btn-secondary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+                <button id="downloadBtn" class="btn btn-secondary" onclick="downloadLog()">
+                    <i class="fas fa-download"></i> Download
+                </button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="error-details">
+                        <strong>Error Loading Log File:</strong>
+                        <p><%= error %></p>
+                        <div class="error-actions">
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home"></i> Go Home
+                            </a>
+                            <button onclick="location.reload()" class="btn btn-secondary">
+                                <i class="fas fa-refresh"></i> Retry
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% } else if (content) { %>
+                <div class="log-viewer-container">
+                    <div class="log-header">
+                        <div class="log-info">
+                            <span class="log-filename"><%= filename %></span>
+                            <span class="log-stats">
+                                <i class="fas fa-list-ol"></i> 
+                                <%= content.split('\n').length %> lines
+                            </span>
+                            <span class="log-size">
+                                <i class="fas fa-weight"></i>
+                                <%= Math.round(Buffer.byteLength(content, 'utf8') / 1024) %> KB
+                            </span>
+                        </div>
+                        <div class="log-controls">
+                            <button id="wrapToggle" class="btn btn-small" onclick="toggleWrap()">
+                                <i class="fas fa-text-width"></i> Toggle Wrap
+                            </button>
+                            <button id="copyBtn" class="btn btn-small" onclick="copyToClipboard()">
+                                <i class="fas fa-copy"></i> Copy All
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="search-container" id="searchContainer" style="display: none;">
+                        <input type="text" id="searchInput" placeholder="Search in log content..." />
+                        <button onclick="searchInLog()" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                        <button onclick="clearSearch()" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <span id="searchResults"></span>
+                    </div>
+
+                    <div class="log-content-wrapper">
+                        <div class="line-numbers" id="lineNumbers"></div>
+                        <pre class="log-content" id="logContent"><%= content %></pre>
+                    </div>
+                </div>
+            <% } else { %>
+                <div class="empty-state">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>No Content Available</h3>
+                    <p>The selected log file appears to be empty or could not be read.</p>
+                </div>
+            <% } %>
+        </main>
+
+        <footer class="footer">
+            <p>Log Viewer | File: <%= filename || 'N/A' %> | Last Updated: <%= new Date().toLocaleString() %></p>
+        </footer>
+    </div>
+
+    <script>
+        // Generate line numbers
+        function generateLineNumbers() {
+            const content = document.getElementById('logContent');
+            const lineNumbers = document.getElementById('lineNumbers');
+            
+            if (content && lineNumbers) {
+                const lines = content.textContent.split('\n');
+                const numbers = lines.map((_, index) => index + 1).join('\n');
+                lineNumbers.textContent = numbers;
+            }
+        }
+
+        // Toggle text wrapping
+        function toggleWrap() {
+            const content = document.getElementById('logContent');
+            content.classList.toggle('wrap-text');
+            
+            const button = document.getElementById('wrapToggle');
+            if (content.classList.contains('wrap-text')) {
+                button.innerHTML = '<i class="fas fa-text-width"></i> No Wrap';
+            } else {
+                button.innerHTML = '<i class="fas fa-text-width"></i> Toggle Wrap';
+            }
+        }
+
+        // Copy content to clipboard
+        async function copyToClipboard() {
+            const content = document.getElementById('logContent').textContent;
+            try {
+                await navigator.clipboard.writeText(content);
+                const button = document.getElementById('copyBtn');
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                alert('Failed to copy to clipboard');
+            }
+        }
+
+        // Download log file
+        function downloadLog() {
+            const content = document.getElementById('logContent').textContent;
+            const filename = '<%= filename %>' || 'log-file.txt';
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Toggle search container
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const container = document.getElementById('searchContainer');
+            const isVisible = container.style.display !== 'none';
+            container.style.display = isVisible ? 'none' : 'block';
+            
+            if (!isVisible) {
+                document.getElementById('searchInput').focus();
+            }
+        });
+
+        // Search functionality
+        function searchInLog() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const content = document.getElementById('logContent');
+            const originalContent = content.textContent;
+            
+            if (!searchTerm) {
+                clearSearch();
+                return;
+            }
+
+            // Simple highlight implementation
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            const highlightedContent = originalContent.replace(regex, '<mark>$1</mark>');
+            content.innerHTML = highlightedContent;
+
+            // Count matches
+            const matches = (originalContent.toLowerCase().match(new RegExp(searchTerm, 'g')) || []).length;
+            document.getElementById('searchResults').textContent = `${matches} matches found`;
+        }
+
+        // Clear search
+        function clearSearch() {
+            const content = document.getElementById('logContent');
+            content.innerHTML = content.textContent; // Remove highlights
+            document.getElementById('searchResults').textContent = '';
+            document.getElementById('searchInput').value = '';
+        }
+
+        // Search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchInLog();
+            }
+        });
+
+        // Initialize line numbers on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateLineNumbers();
+            
+            // Highlight log levels
+            const content = document.getElementById('logContent');
+            if (content) {
+                let html = content.innerHTML;
+                html = html.replace(/\[([^\]]*ERROR[^\]]*)\]/g, '<span class="log-error">[$1]</span>');
+                html = html.replace(/\[([^\]]*WARN[^\]]*)\]/g, '<span class="log-warn">[$1]</span>');
+                html = html.replace(/\[([^\]]*INFO[^\]]*)\]/g, '<span class="log-info">[$1]</span>');
+                html = html.replace(/\[([^\]]*DEBUG[^\]]*)\]/g, '<span class="log-debug">[$1]</span>');
+                content.innerHTML = html;
+            }
+        });
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            location.reload();
+        }, 30000);
+    </script>
+</body>
+</html>

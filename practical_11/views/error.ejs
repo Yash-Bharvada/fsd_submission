@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - <%= status %></title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .error-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .error-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .error-icon {
+            font-size: 6rem;
+            color: #e74c3c;
+            margin-bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+        
+        .error-status {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .error-message {
+            font-size: 1.5rem;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        
+        .error-description {
+            color: #777;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .error-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .error-btn {
+            background: #3498db;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .error-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .error-btn.secondary {
+            background: #95a5a6;
+        }
+        
+        .error-btn.secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+        
+        @media (max-width: 768px) {
+            .error-card {
+                padding: 40px 20px;
+            }
+            
+            .error-status {
+                font-size: 3rem;
+            }
+            
+            .error-message {
+                font-size: 1.3rem;
+            }
+            
+            .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .error-btn {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-card">
+            <div class="error-icon">
+                <% if (status === 404) { %>
+                    <i class="fas fa-search"></i>
+                <% } else if (status === 500) { %>
+                    <i class="fas fa-exclamation-triangle"></i>
+                <% } else { %>
+                    <i class="fas fa-question-circle"></i>
+                <% } %>
+            </div>
+            
+            <div class="error-status"><%= status %></div>
+            
+            <div class="error-message">
+                <% if (status === 404) { %>
+                    Page Not Found
+                <% } else if (status === 500) { %>
+                    Internal Server Error
+                <% } else { %>
+                    Something Went Wrong
+                <% } %>
+            </div>
+            
+            <div class="error-description">
+                <% if (status === 404) { %>
+                    The page you're looking for doesn't exist or has been moved.
+                <% } else if (status === 500) { %>
+                    We're experiencing some technical difficulties. Please try again later.
+                <% } else { %>
+                    <%= message || 'An unexpected error occurred.' %>
+                <% } %>
+            </div>
+            
+            <div class="error-actions">
+                <a href="/home" class="error-btn">
+                    <i class="fas fa-home"></i>
+                    Go Home
+                </a>
+                <a href="javascript:history.back()" class="error-btn secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Go Back
+                </a>
+                <% if (status === 500) { %>
+                    <a href="/health" class="error-btn secondary">
+                        <i class="fas fa-heartbeat"></i>
+                        Check Status
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-redirect to home after 30 seconds for 404 errors
+        <% if (status === 404) { %>
+            setTimeout(() => {
+                if (confirm('Would you like to be redirected to the home page?')) {
+                    window.location.href = '/home';
+                }
+            }, 30000);
+        <% } %>
+        
+        // Add some interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            const errorCard = document.querySelector('.error-card');
+            errorCard.style.opacity = '0';
+            errorCard.style.transform = 'translateY(50px)';
+            
+            setTimeout(() => {
+                errorCard.style.transition = 'all 0.8s ease';
+                errorCard.style.opacity = '1';
+                errorCard.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-rocket"></i>
+                    <h1><%= teamName %></h1>
+                </div>
+                <div class="header-info">
+                    <span class="date"><i class="fas fa-calendar"></i> <%= currentDate %></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Welcome Section -->
+            <section class="welcome-section">
+                <div class="welcome-card">
+                    <div class="welcome-icon">
+                        <i class="fas fa-hand-wave"></i>
+                    </div>
+                    <div class="welcome-text">
+                        <h2>Welcome to Your Dashboard!</h2>
+                        <p><%= message %></p>
+                        <p class="subtitle">This template serves as the foundation for all our future web applications.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Features Grid -->
+            <section class="features-section">
+                <h3><i class="fas fa-star"></i> Available Features</h3>
+                <div class="features-grid">
+                    <% features.forEach(function(feature) { %>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="feature-content">
+                                <h4><%= feature %></h4>
+                                <p>Coming soon in future updates</p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </section>
+
+            <!-- Quick Actions -->
+            <section class="actions-section">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <div class="actions-grid">
+                    <a href="/health" class="action-btn">
+                        <i class="fas fa-heartbeat"></i>
+                        <span>System Health</span>
+                    </a>
+                    <a href="#" class="action-btn" onclick="showInfo()">
+                        <i class="fas fa-info-circle"></i>
+                        <span>App Info</span>
+                    </a>
+                    <a href="#" class="action-btn" onclick="refreshPage()">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Refresh</span>
+                    </a>
+                    <a href="https://expressjs.com/en/starter/hello-world.html" target="_blank" class="action-btn">
+                        <i class="fas fa-book"></i>
+                        <span>Documentation</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Status Cards -->
+            <section class="status-section">
+                <div class="status-cards">
+                    <div class="status-card success">
+                        <div class="status-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="status-info">
+                            <h4>Server Status</h4>
+                            <p>Running</p>
+                        </div>
+                    </div>
+                    <div class="status-card info">
+                        <div class="status-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="status-info">
+                            <h4>Framework</h4>
+                            <p>Express.js</p>
+                        </div>
+                    </div>
+                    <div class="status-card warning">
+                        <div class="status-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="status-info">
+                            <h4>Team Ready</h4>
+                            <p>Template Mode</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 <%= teamName %>. Built with Express.js</p>
+                <div class="footer-links">
+                    <a href="/health">Health Check</a>
+                    <a href="https://github.com" target="_blank">GitHub</a>
+                    <a href="https://expressjs.com" target="_blank">Express.js</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>

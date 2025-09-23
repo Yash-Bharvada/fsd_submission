@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    <i class="fas fa-calculator"></i>
+                    Kids Calculator
+                    <i class="fas fa-star"></i>
+                </h1>
+                <p class="subtitle">Let's learn math together! 🎓</p>
+            </div>
+        </header>
+
+        <!-- Main Calculator -->
+        <main class="calculator-container">
+            <div class="calculator-card">
+                <!-- Error Display -->
+                <% if (error) { %>
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span><%= error %></span>
+                        <button class="close-error" onclick="hideError()">×</button>
+                    </div>
+                <% } %>
+
+                <!-- Result Display -->
+                <% if (showResult && result !== null) { %>
+                    <div class="result-display">
+                        <div class="result-header">
+                            <i class="fas fa-trophy"></i>
+                            <span>Great job! Here's your answer:</span>
+                        </div>
+                        <div class="calculation">
+                            <%= num1 %> <%= operationSymbol %> <%= num2 %> = 
+                            <span class="result-number"><%= result %></span>
+                        </div>
+                        <div class="celebration">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-heart"></i>
+                            <i class="fas fa-thumbs-up"></i>
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- Calculator Form -->
+                <form action="/calculate" method="POST" class="calculator-form">
+                    <div class="input-section">
+                        <div class="input-group">
+                            <label for="num1" class="input-label">
+                                <i class="fas fa-1"></i>
+                                First Number
+                            </label>
+                            <input 
+                                type="text" 
+                                id="num1" 
+                                name="num1" 
+                                value="<%= num1 %>"
+                                placeholder="Enter first number (e.g., 5)"
+                                class="number-input"
+                                required
+                            >
+                        </div>
+
+                        <div class="operation-selector">
+                            <label class="input-label">
+                                <i class="fas fa-cogs"></i>
+                                Choose Operation
+                            </label>
+                            <div class="operation-buttons">
+                                <input type="radio" id="add" name="operation" value="add" <%= operation === 'add' ? 'checked' : '' %>>
+                                <label for="add" class="operation-btn add-btn">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add (+)</span>
+                                </label>
+
+                                <input type="radio" id="subtract" name="operation" value="subtract" <%= operation === 'subtract' ? 'checked' : '' %>>
+                                <label for="subtract" class="operation-btn subtract-btn">
+                                    <i class="fas fa-minus"></i>
+                                    <span>Subtract (-)</span>
+                                </label>
+
+                                <input type="radio" id="multiply" name="operation" value="multiply" <%= operation === 'multiply' ? 'checked' : '' %>>
+                                <label for="multiply" class="operation-btn multiply-btn">
+                                    <i class="fas fa-times"></i>
+                                    <span>Multiply (×)</span>
+                                </label>
+
+                                <input type="radio" id="divide" name="operation" value="divide" <%= operation === 'divide' ? 'checked' : '' %>>
+                                <label for="divide" class="operation-btn divide-btn">
+                                    <i class="fas fa-divide"></i>
+                                    <span>Divide (÷)</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="num2" class="input-label">
+                                <i class="fas fa-2"></i>
+                                Second Number
+                            </label>
+                            <input 
+                                type="text" 
+                                id="num2" 
+                                name="num2" 
+                                value="<%= num2 %>"
+                                placeholder="Enter second number (e.g., 3)"
+                                class="number-input"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="button-section">
+                        <button type="submit" class="calculate-btn">
+                            <i class="fas fa-equals"></i>
+                            Calculate!
+                        </button>
+                        
+                        <button type="button" class="clear-btn" onclick="clearForm()">
+                            <i class="fas fa-eraser"></i>
+                            Clear
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Fun Facts Section -->
+                <div class="fun-facts">
+                    <h3><i class="fas fa-lightbulb"></i> Math Tips!</h3>
+                    <div class="tips-container">
+                        <div class="tip">
+                            <i class="fas fa-plus-circle"></i>
+                            <span>Addition makes numbers bigger!</span>
+                        </div>
+                        <div class="tip">
+                            <i class="fas fa-minus-circle"></i>
+                            <span>Subtraction makes numbers smaller!</span>
+                        </div>
+                        <div class="tip">
+                            <i class="fas fa-times-circle"></i>
+                            <span>Multiplication is like adding many times!</span>
+                        </div>
+                        <div class="tip">
+                            <i class="fas fa-divide"></i>
+                            <span>Division splits numbers into equal parts!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>
+                    <i class="fas fa-heart"></i>
+                    Made with love for young mathematicians!
+                    <i class="fas fa-graduation-cap"></i>
+                </p>
+                <div class="footer-links">
+                    <a href="/health" class="footer-link">
+                        <i class="fas fa-heartbeat"></i>
+                        System Status
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="/script.js"></script>
+</body>
+</html>

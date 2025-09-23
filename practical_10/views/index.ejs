@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <i class="fas fa-file-alt"></i>
+                <h1>Log Viewer</h1>
+                <p class="subtitle">Developer Tool for Server Log Analysis</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="section">
+                <h2><i class="fas fa-folder-open"></i> Available Log Files</h2>
+                
+                <% if (files && files.length > 0) { %>
+                    <div class="log-files-grid">
+                        <% files.forEach(function(file) { %>
+                            <div class="log-file-card">
+                                <div class="file-icon">
+                                    <i class="fas fa-file-code"></i>
+                                </div>
+                                <div class="file-info">
+                                    <h3><%= file.name %></h3>
+                                    <div class="file-type">Type: <%= file.type.toUpperCase() %> File</div>
+                                    <div class="file-size">Size: <%= (file.size / 1024).toFixed(2) %> KB</div>
+                                    <div class="file-modified">Modified: <%= new Date(file.modified).toLocaleString() %></div>
+                                </div>
+                                <div class="file-actions">
+                                    <a href="/logs/<%= file.name %>" class="btn btn-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } else { %>
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>No Log Files Found</h3>
+                        <p>There are currently no .log files available in the logs directory.</p>
+                        <div class="help-text">
+                            <p><strong>For developers:</strong> Place your .txt or .log files in the <code>/logs</code> directory to view them here.</p>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-info-circle"></i> How to Use</h2>
+                <div class="info-cards">
+                    <div class="info-card">
+                        <i class="fas fa-upload"></i>
+                        <h4>1. Upload Logs</h4>
+                        <p>Place your error log files (.log or .txt) in the server's logs directory</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <h4>2. Select File</h4>
+                        <p>Click on any log file from the list above to view its contents</p>
+                    </div>
+                    <div class="info-card">
+                        <i class="fas fa-search"></i>
+                        <h4>3. Analyze</h4>
+                        <p>Use browser search (Ctrl+F) to find specific errors or patterns</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 Log Viewer Tool | Built with Express.js for Developer Productivity</p>
+            <div class="footer-links">
+                <a href="/health" class="footer-link">
+                    <i class="fas fa-heartbeat"></i> Health Check
+                </a>
+                <a href="/api/logs" class="footer-link">
+                    <i class="fas fa-code"></i> API
+                </a>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Auto-refresh functionality
+        function refreshLogList() {
+            fetch('/api/logs')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Log files refreshed:', data.files);
+                        // Could implement dynamic refresh here
+                    }
+                })
+                .catch(error => console.error('Error refreshing logs:', error));
+        }
+
+        // Refresh every 30 seconds
+        setInterval(refreshLogList, 30000);
+
+        // Add loading states to buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            });
+        });
+    </script>
+</body>
+</html>
